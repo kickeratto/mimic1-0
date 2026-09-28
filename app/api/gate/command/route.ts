@@ -8,10 +8,13 @@ export async function POST() {
     const deviceId = process.env.EWELINK_DEVICE_ID
 
     if (!email || !password || !deviceId) {
-      return NextResponse.json({ success: false, error: 'Faltan variables de entorno de eWeLink' }, { status: 400 })
+      return NextResponse.json(
+        { success: false, error: 'Faltan variables de entorno de eWeLink en Vercel' },
+        { status: 400 }
+      )
     }
 
-    // 1. Obtener Token de Acceso desde eWeLink
+    // 1. Iniciar sesión y obtener el token (at) de eWeLink
     const loginRes = await fetch(`https://${region}-api.coolkit.cc:8080/api/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -20,7 +23,7 @@ export async function POST() {
         password,
         version: 8,
         ts: Math.floor(Date.now() / 1000),
-        appid: 'oe1243567890abcdef', // AppID público estándar de eWeLink
+        appid: 'oe1243567890abcdef',
         imei: '12345678-1234-1234-1234-123456789012',
         os: 'android',
       }),
@@ -29,16 +32,17 @@ export async function POST() {
     const loginData = await loginRes.json()
 
     if (loginData.error !== 0 || !loginData.at) {
-      return NextResponse.json({ success: false, error: 'Error de autenticación con eWeLink', details: loginData }, { status: 401 })
+      return NextResponse.json(
+        { success: false, error: 'Error de autenticación eWeLink', details: loginData },
+        { status: 401 }
+      )
     }
 
-    const at = loginData.at
-
-    // 2. Enviar pulso/encendido al dispositivo Sonoff/eWeLink
+    // 2. Enviar pulso de encendido al dispositivo
     const toggleRes = await fetch(`https://${region}-zeroconf-api.coolkit.cc:8080/api/v2/device/thing/status`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${at}`,
+        'Authorization': `Bearer ${loginData.at}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
