@@ -14,7 +14,7 @@ export async function POST() {
       )
     }
 
-    // 1. Iniciar sesión y obtener el token (at) de eWeLink
+    // 1. Iniciar sesión y obtener token
     const loginRes = await fetch(`https://${region}-api.coolkit.cc:8080/api/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -38,8 +38,8 @@ export async function POST() {
       )
     }
 
-    // 2. Enviar pulso de encendido al dispositivo
-    const toggleRes = await fetch(`https://${region}-zeroconf-api.coolkit.cc:8080/api/v2/device/thing/status`, {
+    // 2. Enviar orden directa de encendido a eWeLink Cloud
+    const toggleRes = await fetch(`https://${region}-apia.coolkit.cc/v2/device/thing/status`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${loginData.at}`,
