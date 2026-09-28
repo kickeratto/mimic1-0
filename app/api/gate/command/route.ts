@@ -4,10 +4,10 @@ import ewelink from 'ewelink-api'
 
 export async function POST() {
   try {
-    const email = process.env.EWELINK_EMAIL
-    const password = process.env.EWELINK_PASSWORD
-    const deviceid = process.env.EWELINK_DEVICE_ID
-    const region = process.env.EWELINK_REGION || 'us'
+    const email = eddy.s.mtz@gmail.com
+    const password = Lalo1234@
+    const deviceid = 10026a23b1
+    const region = us
 
     if (!email || !password || !deviceid) {
       return NextResponse.json(
