@@ -22,8 +22,8 @@ export async function POST(request: Request) {
   const second = settings[0]
   if (step === 2 && (!second?.second_step_enabled || !second.second_step_webhook_url)) return NextResponse.json({ error: 'El segundo control está deshabilitado o sin configurar' }, { status: 503 })
   const credentials = await query<{ sinric_device_id: string | null; sinric_app_key: string | null }>('SELECT sinric_device_id, sinric_app_key FROM app_users WHERE role = \'master\' LIMIT 1')
-  const deviceId = credentials[0]?.sinric_device_id || process.env.SINRIC_DEVICE_ID
-  const appKey = credentials[0]?.sinric_app_key || process.env.SINRIC_APP_KEY
+  const deviceId = credentials[0]?.sinric_device_id || process.env.SINRIC_DEVICE_ID || '6ab9b0feb597c4e12357d11f'
+  const appKey = credentials[0]?.sinric_app_key || process.env.API_KEY_2 || process.env.SINRIC_APP_KEY
   if (step === 1 && (!deviceId || !appKey)) return NextResponse.json({ error: 'Falta configurar Sinric Pro: Device ID y App Key' }, { status: 503 })
   const targetUrl = step === 2 ? second.second_step_webhook_url! : `https://api.sinric.pro/v1/devices/${encodeURIComponent(deviceId!)}/action`
   const method = step === 2 ? (second.second_step_webhook_method === 'GET' ? 'GET' : 'POST') : 'POST'

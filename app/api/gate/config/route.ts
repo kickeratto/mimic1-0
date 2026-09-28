@@ -34,9 +34,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, message: 'Configuración guardada.' })
   }
   const savedCredentials = await query<{ sinric_device_id: string | null; sinric_app_key: string | null; sinric_app_secret: string | null }>('SELECT sinric_device_id, sinric_app_key, sinric_app_secret FROM app_users WHERE role = \'master\' LIMIT 1')
-  const deviceId = savedCredentials[0]?.sinric_device_id || process.env.SINRIC_DEVICE_ID
-  const appKey = savedCredentials[0]?.sinric_app_key || process.env.SINRIC_APP_KEY
-  const appSecret = savedCredentials[0]?.sinric_app_secret || process.env.SINRIC_APP_SECRET
+  const deviceId = savedCredentials[0]?.sinric_device_id || process.env.SINRIC_DEVICE_ID || '6ab9b0feb597c4e12357d11f'
+  const appKey = savedCredentials[0]?.sinric_app_key || process.env.API_KEY_2 || process.env.SINRIC_APP_KEY
+  const appSecret = savedCredentials[0]?.sinric_app_secret || process.env.Secret || process.env.SINRIC_APP_SECRET
   if (!deviceId || !appKey) return NextResponse.json({ ok: false, message: 'Faltan SINRIC_DEVICE_ID o SINRIC_APP_KEY.' }, { status: 503 })
   try {
     const response = await fetch(`https://api.sinric.pro/v1/devices/${encodeURIComponent(deviceId)}`, { headers: { Authorization: appKey, 'x-sinric-api-key': appKey, ...(appSecret ? { 'x-sinric-app-secret': appSecret } : {}) }, cache: 'no-store' })
@@ -51,9 +51,9 @@ export async function GET() {
   const isMaster = profiles[0]?.role === 'master'
   const profile = await query<{ gate_webhook_url: string | null; gate_webhook_method: string | null; gate_webhook_secret: string | null; second_step_enabled: boolean; second_step_visible: boolean; second_step_webhook_url: string | null; second_step_webhook_method: string | null; second_step_webhook_secret: string | null; sinric_device_id: string | null; sinric_app_key: string | null; sinric_app_secret: string | null }>('SELECT gate_webhook_url, gate_webhook_method, gate_webhook_secret, second_step_enabled, second_step_visible, second_step_webhook_url, second_step_webhook_method, second_step_webhook_secret, sinric_device_id, sinric_app_key, sinric_app_secret FROM app_users WHERE role IN (\'master\', \'admin\') ORDER BY CASE WHEN role = \'master\' THEN 0 ELSE 1 END LIMIT 1')
   const saved = profile[0]
-  const configuredDeviceId = saved?.sinric_device_id || process.env.SINRIC_DEVICE_ID
-  const configuredAppKey = saved?.sinric_app_key || process.env.SINRIC_APP_KEY
-  const configuredAppSecret = saved?.sinric_app_secret || process.env.SINRIC_APP_SECRET
+  const configuredDeviceId = saved?.sinric_device_id || process.env.SINRIC_DEVICE_ID || '6ab9b0feb597c4e12357d11f'
+  const configuredAppKey = saved?.sinric_app_key || process.env.API_KEY_2 || process.env.SINRIC_APP_KEY
+  const configuredAppSecret = saved?.sinric_app_secret || process.env.Secret || process.env.SINRIC_APP_SECRET
   const deviceIdConfigured = Boolean(configuredDeviceId)
   const appKeyConfigured = Boolean(configuredAppKey)
   const appSecretConfigured = Boolean(configuredAppSecret)
@@ -68,5 +68,5 @@ export async function GET() {
     } catch { reachable = false }
   }
   const diagnostic = !deviceIdConfigured ? 'Falta Device ID.' : !appKeyConfigured ? 'Falta App Key.' : !appSecretConfigured ? 'Falta App Secret.' : !reachable ? 'Sinric Pro no respondió. Revisa credenciales, dispositivo y conexión a Internet.' : 'Conexión correcta; Sinric Pro respondió.'
-  return NextResponse.json({ deviceIdConfigured, appKeyConfigured, appSecretConfigured, reachable, connected: deviceIdConfigured && appKeyConfigured && reachable, diagnostic: isMaster ? diagnostic : undefined, transport: 'sinric-pro', webhookUrl: saved?.gate_webhook_url ?? '', webhookMethod: saved?.gate_webhook_method ?? 'POST', webhookSecretConfigured: Boolean(saved?.gate_webhook_secret), sinricDeviceId: isMaster ? (saved?.sinric_device_id ?? process.env.SINRIC_DEVICE_ID ?? '') : '', sinricAppKey: isMaster ? (saved?.sinric_app_key ?? process.env.SINRIC_APP_KEY ?? '') : '', sinricAppSecret: '', secondStepEnabled: Boolean(saved?.second_step_enabled), secondStepVisible: Boolean(saved?.second_step_visible), secondStepWebhookUrl: saved?.second_step_webhook_url ?? '', secondStepWebhookMethod: saved?.second_step_webhook_method ?? 'POST', secondStepSecretConfigured: Boolean(saved?.second_step_webhook_secret), checkedAt: new Date().toISOString() }, { headers: { 'Cache-Control': 'no-store, max-age=0' } })
+  return NextResponse.json({ deviceIdConfigured, appKeyConfigured, appSecretConfigured, reachable, connected: deviceIdConfigured && appKeyConfigured && reachable, diagnostic: isMaster ? diagnostic : undefined, transport: 'sinric-pro', webhookUrl: saved?.gate_webhook_url ?? '', webhookMethod: saved?.gate_webhook_method ?? 'POST', webhookSecretConfigured: Boolean(saved?.gate_webhook_secret), sinricDeviceId: isMaster ? ((saved?.sinric_device_id ?? process.env.SINRIC_DEVICE_ID ?? '6ab9b0feb597c4e12357d11f') ?? '') : '', sinricAppKey: isMaster ? ((saved?.sinric_app_key ?? process.env.API_KEY_2 ?? process.env.SINRIC_APP_KEY) ?? '') : '', sinricAppSecret: '', secondStepEnabled: Boolean(saved?.second_step_enabled), secondStepVisible: Boolean(saved?.second_step_visible), secondStepWebhookUrl: saved?.second_step_webhook_url ?? '', secondStepWebhookMethod: saved?.second_step_webhook_method ?? 'POST', secondStepSecretConfigured: Boolean(saved?.second_step_webhook_secret), checkedAt: new Date().toISOString() }, { headers: { 'Cache-Control': 'no-store, max-age=0' } })
 }
