@@ -13,6 +13,7 @@ export function GateDashboard({ managementOnly = false }: { managementOnly?: boo
   const [active, setActive] = useState('Control')
   const [message, setMessage] = useState('')
   const [gateOpen, setGateOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [accesses, setAccesses] = useState<Access[]>([])
   const [inviteOpen, setInviteOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -79,7 +80,6 @@ export function GateDashboard({ managementOnly = false }: { managementOnly?: boo
     } finally {
       setIsProcessing(false)
     }
-  }
   }
   const refreshSinricStatus = async () => {
     const response = await fetch(`/api/gate/config?ts=${Date.now()}`, { cache: 'no-store' })
