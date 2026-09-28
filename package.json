@@ -35,10 +35,6 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
     "typescript": "5.7.3"
-  },
-  "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start"
-}
+  }
+  
 }
