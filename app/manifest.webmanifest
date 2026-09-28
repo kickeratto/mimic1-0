@@ -1,0 +1,11 @@
+{
+  "name": "TECNO-OTAY · Control seguro",
+  "short_name": "TECNO-OTAY",
+  "description": "Tecnología a tu alcance · Control seguro del portón",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "orientation": "portrait",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
