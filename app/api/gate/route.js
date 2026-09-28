@@ -9,7 +9,7 @@ export async function POST(request) {
     });
 
     // ID de tu dispositivo eWeLink (Device6a23b1)
-    const deviceId = '10026a23bq';       // Reemplaza con el Device ID exacto (lo ves en la app o web de eWeLink)
+    const deviceId = '10026a23b1';       // Reemplaza con el Device ID exacto (lo ves en la app o web de eWeLink)
 
     // Envía la orden de encendido/pulso al portón
     const result = await connection.setDevicePowerState(deviceId, 'on');
