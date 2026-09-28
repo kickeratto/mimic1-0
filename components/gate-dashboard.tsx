@@ -58,15 +58,28 @@ export function GateDashboard({ managementOnly = false }: { managementOnly?: boo
     router.refresh()
   }
   const sendCommand = async (command: 'pulse' | 'open' | 'close', step = 1) => {
+    setIsProcessing(true)
     try {
-      const response = await fetch('/api/gate/command', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command, step }) })
+      const response = await fetch('/api/gate/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command, step }),
+      })
       const data = await response.json().catch(() => ({}))
-      if (!response.ok) { notify(data.error ?? 'No se pudo enviar el comando'); return }
+
+      if (!response.ok) {
+        notify(data.error ?? 'No se pudo enviar el comando')
+        return
+      }
+
       if (command !== 'pulse') setGateOpen(command === 'open')
-      notify(command === 'pulse' ? 'Señal enviada al portón' : `Orden de ${command === 'open' ? 'apertura' : 'cierre'} enviada`)
+      notify(command === 'pulse' ? 'Señal enviada al portón' : `Orden de ${command}`)
     } catch {
       notify('No hay conexión con el servicio del portón')
+    } finally {
+      setIsProcessing(false)
     }
+  }
   }
   const refreshSinricStatus = async () => {
     const response = await fetch(`/api/gate/config?ts=${Date.now()}`, { cache: 'no-store' })
